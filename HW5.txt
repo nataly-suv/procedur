@@ -1,0 +1,10 @@
+// правила
+sum([], 0).
+
+sum([X|Tail], Sum) :- 
+    sum(Tail, Sum2),
+    Sum is X + Sum2.
+
+
+// запрос 
+?- sum([1, 2, 3, 4], Sum)
