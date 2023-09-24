@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      :root {
+        --color: rgb(200, 200, 200);
+        --color-light: white;
+      }
+      a {
+        text-decoration: none;
+      }
+      .center {
+        padding-right: calc(50% - 300px);
+        padding-left: calc(50% - 300px);
+      }
+      .conteiner {
+        display: flex;
+        flex-direction: column;
+        align-self: center;
+        justify-content: center;
+        align-items: center;
+        gap: 50px;
+        width: 600px;
+        height: 300px;
+        border: 1px solid rgb(117, 162, 245);
+        background-color: rgb(117, 162, 245);
+        margin-top: 200px;
+      }
+
+      .time {
+        font-size: 60px;
+        color: blue;
+      }
+      .btn {
+        display: flex;
+        flex-direction: row;
+        gap: 30px;
+      }
+
+      .btn_link {
+        text-align: center;
+        color: rgb(60, 60, 250);
+        font-size: 40px;
+        cursor: pointer;
+      }
+      .btn_link:hover {
+        color: rgb(3, 3, 145);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="center">
+      <div id="clock" class="conteiner">
+        <div class="time">{{ time }}</div>
+
+        <div class="btn">
+          <a class="btn_link" id="start">Start</a>
+          <a class="btn_link" id="stop">Stop</a>
+          <a class="btn_link" id="reset">Reset</a>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script>
+      var clock = new Vue({
+        el: "#clock",
+        data: {
+          time: "00:00:00",
+        },
+      });
+
+      var timeBegan = null,
+        timeStopped = null,
+        stoppedDuration = 0,
+        started = null,
+        running = false;
+
+      document.getElementById("start").addEventListener("click", start);
+      document.getElementById("stop").addEventListener("click", stop);
+      document.getElementById("reset").addEventListener("click", reset);
+
+      function start() {
+        if (running) return;
+
+        if (timeBegan === null) {
+          reset();
+          timeBegan = new Date();
+        }
+
+        if (timeStopped !== null) {
+          stoppedDuration += new Date() - timeStopped;
+        }
+
+        started = setInterval(clockRunning, 10);
+        running = true;
+      }
+
+      function stop() {
+        running = false;
+        timeStopped = new Date();
+        clearInterval(started);
+      }
+
+      function reset() {
+        running = false;
+        clearInterval(started);
+        stoppedDuration = 0;
+        timeBegan = null;
+        timeStopped = null;
+        clock.time = "00:00:00";
+      }
+
+      function clockRunning() {
+        var currentTime = new Date(),
+          timeElapsed = new Date(currentTime - timeBegan - stoppedDuration),
+          hour = timeElapsed.getUTCHours(),
+          min = timeElapsed.getUTCMinutes(),
+          sec = timeElapsed.getUTCSeconds();
+
+        clock.time =
+          zeroPrefix(hour, 2) +
+          ":" +
+          zeroPrefix(min, 2) +
+          ":" +
+          zeroPrefix(sec, 2);
+      }
+
+      function zeroPrefix(num, digit) {
+        var zero = "";
+        for (var i = 0; i < digit; i++) {
+          zero += "0";
+        }
+        return (zero + num).slice(-digit);
+      }
+    </script>
+  </body>
+</html>
